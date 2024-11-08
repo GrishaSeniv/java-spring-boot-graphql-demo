@@ -2,7 +2,7 @@ package com.example.demo.book;
 
 import com.example.demo.domain.dto.AddBookReq;
 import com.example.demo.domain.dto.Book;
-import com.example.demo.domain.dto.BookDTO;
+import com.example.demo.domain.dto.BookDTOProjection;
 import com.example.demo.domain.entity.BookEntity;
 
 import java.util.Collections;
@@ -19,11 +19,11 @@ class Converter {
                 .setTitle(req.title());
     }
 
-    static BookDTO toBookDTO(BookEntity entity) {
-        return new BookDTO(entity.getId(), entity.getTitle(), entity.getGenre());
+    static BookDTOProjection toBookDTO(BookEntity entity) {
+        return new BookDTOProjection(entity.getId(), entity.getTitle(), entity.getGenre());
     }
 
-    static List<Book> toBooks(List<BookDTO> dtos) {
+    static List<Book> toBooks(List<BookDTOProjection> dtos) {
         if (dtos == null) {
             return Collections.emptyList();
         }
@@ -32,7 +32,7 @@ class Converter {
                 .toList();
     }
 
-    static Book toBook(BookDTO dto) {
-        return new Book(dto.id(), dto.title(), dto.genre());
+    static Book toBook(BookDTOProjection dto) {
+        return new Book(dto.getId(), dto.getTitle(), dto.getGenre());
     }
 }

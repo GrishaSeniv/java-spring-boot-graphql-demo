@@ -3,7 +3,10 @@ package com.example.demo.author;
 import com.example.demo.domain.dto.AddAuthorReq;
 import com.example.demo.domain.dto.Author;
 import com.example.demo.domain.dto.AuthorDTO;
+import com.example.demo.domain.dto.AuthorDTOProjection;
+import com.example.demo.domain.util.Pagination;
 import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.InputArgument;
@@ -11,9 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.example.demo.author.Converter.toAuthor;
 import static com.example.demo.author.Converter.toAuthors;
+import static com.example.demo.domain.util.DgsUtil.getRequestedFields;
 
 /**
  * @author Hryhorii Seniv
@@ -29,16 +34,18 @@ class AuthorDataFetcher {
     }
 
     @DgsQuery
-    public List<Author> authors(@InputArgument Integer limit, @InputArgument Integer offset) {
+    public List<Author> authors(@InputArgument Integer limit, @InputArgument Integer offset, DgsDataFetchingEnvironment dgs) {
         logger.info("[Graphql] Query: authors triggered");
-        List<AuthorDTO> list = service.findAll(limit, offset);
+        Set<String> requestedFields = getRequestedFields(dgs, Author.class);
+        List<AuthorDTOProjection> list = service.findAllWithFields(new Pagination(limit, offset), requestedFields);
         return toAuthors(list);
     }
 
     @DgsQuery
-    public Author authorById(@InputArgument Long id) {
+    public Author authorById(@InputArgument Long id, DgsDataFetchingEnvironment dgs) {
         logger.info("[Graphql] Query: authorById triggered");
-        AuthorDTO dto = service.findById(id);
+        Set<String> requestedFields = getRequestedFields(dgs, Author.class);
+        AuthorDTOProjection dto = service.findByIdWithFields(id, requestedFields);
         return toAuthor(dto);
     }
 
