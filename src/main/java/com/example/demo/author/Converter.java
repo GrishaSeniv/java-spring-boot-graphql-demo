@@ -3,6 +3,7 @@ package com.example.demo.author;
 import com.example.demo.domain.dto.AddAuthorReq;
 import com.example.demo.domain.dto.Author;
 import com.example.demo.domain.dto.AuthorDTO;
+import com.example.demo.domain.dto.AuthorDTOProjection;
 import com.example.demo.domain.entity.AuthorEntity;
 
 import java.util.Collections;
@@ -23,7 +24,7 @@ class Converter {
         return new AuthorDTO(entity.getId(), entity.getName(), entity.getBio());
     }
 
-    static List<Author> toAuthors(List<AuthorDTO> dtos) {
+    static List<Author> toAuthors(List<AuthorDTOProjection> dtos) {
         if (dtos == null) {
             return Collections.emptyList();
         }
@@ -34,5 +35,9 @@ class Converter {
 
     static Author toAuthor(AuthorDTO dto) {
         return new Author(dto.id(), dto.name(), dto.bio());
+    }
+
+    static Author toAuthor(AuthorDTOProjection dto) {
+        return new Author(dto.getId(), dto.getName(), dto.getBio());
     }
 }

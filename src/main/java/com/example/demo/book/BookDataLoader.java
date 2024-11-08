@@ -1,9 +1,10 @@
 package com.example.demo.book;
 
 import com.example.demo.domain.dto.Book;
-import com.example.demo.domain.dto.BookDTO;
+import com.example.demo.domain.dto.BookDTOProjection;
 import com.netflix.graphql.dgs.DgsDataLoader;
-import org.dataloader.MappedBatchLoader;
+import org.dataloader.BatchLoaderEnvironment;
+import org.dataloader.MappedBatchLoaderWithContext;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ import static com.example.demo.book.Converter.toBooks;
  * @version 2024-10-31
  */
 @DgsDataLoader(name = "book")
-class BookDataLoader implements MappedBatchLoader<Long, List<Book>> {
+class BookDataLoader implements MappedBatchLoaderWithContext<Long, List<Book>> {
     private final BookService service;
 
     BookDataLoader(BookService service) {
@@ -27,8 +28,9 @@ class BookDataLoader implements MappedBatchLoader<Long, List<Book>> {
     }
 
     @Override
-    public CompletionStage<Map<Long, List<Book>>> load(Set<Long> set) {
-        List<BookDTO> dtos = service.findAllByAuthorIds(set);
+    public CompletionStage<Map<Long, List<Book>>> load(Set<Long> set, BatchLoaderEnvironment ble) {
+        Set<String> requestedFields = (Set<String>) ble.getKeyContextsList().getFirst();
+        List<BookDTOProjection> dtos = service.findAllByAuthorIdsWithFields(set, requestedFields);
         List<Book> books = toBooks(dtos);
         Map<Long, List<Book>> booIdListMap = books.stream()
                 .collect(Collectors.groupingBy(Book::id));

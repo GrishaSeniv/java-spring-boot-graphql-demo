@@ -3,7 +3,8 @@ package com.example.demo.book;
 import com.example.demo.domain.dto.AddBookReq;
 import com.example.demo.domain.dto.Author;
 import com.example.demo.domain.dto.Book;
-import com.example.demo.domain.dto.BookDTO;
+import com.example.demo.domain.dto.BookDTOProjection;
+import com.example.demo.domain.util.Pagination;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsData;
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
@@ -16,10 +17,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import static com.example.demo.book.Converter.toBook;
 import static com.example.demo.book.Converter.toBooks;
+import static com.example.demo.domain.util.DgsUtil.getRequestedFields;
 
 /**
  * @author Hryhorii Seniv
@@ -35,9 +38,10 @@ class BookDataFetcher {
     }
 
     @DgsQuery
-    public List<Book> books(@InputArgument Integer limit, @InputArgument Integer offset) {
+    public List<Book> books(@InputArgument Integer limit, @InputArgument Integer offset, DgsDataFetchingEnvironment dfe) {
         logger.info("[Graphql] Query: books triggered");
-        List<BookDTO> dtos = service.findAll(limit, offset);
+        Set<String> requestedFields = getRequestedFields(dfe, Book.class);
+        List<BookDTOProjection> dtos = service.findAllWithFields(new Pagination(limit, offset), requestedFields);
         return toBooks(dtos);
     }
 
@@ -66,21 +70,23 @@ class BookDataFetcher {
         }
         DataLoader<Long, List<Book>> dataLoader = dfe.getDataLoader(BookDataLoader.class);
         Long authorId = author.id();
-        logger.info("[Graphql] Fetching books for author ID: {}", authorId);
-        return dataLoader.load(authorId);
+        Set<String> requestedFields = getRequestedFields(dfe, Book.class);
+        logger.info("[Graphql] Fetching books for author ID: {} with requestFields: {}", authorId, requestedFields);
+        return dataLoader.load(authorId, requestedFields);
     }
 
     @DgsQuery
-    public Book bookById(@InputArgument Long id) {
+    public Book bookById(@InputArgument Long id, DgsDataFetchingEnvironment dfe) {
         logger.info("[Graphql] Query: bookById triggered");
-        BookDTO dto = service.findById(id);
+        Set<String> requestedFields = getRequestedFields(dfe, Book.class);
+        BookDTOProjection dto = service.findByIdWithFields(id, requestedFields);
         return toBook(dto);
     }
 
     @DgsMutation
     public Book addBook(@InputArgument AddBookReq book) {
         logger.info("[Graphql] Mutation: addBook triggered");
-        BookDTO dto = service.save(book);
+        BookDTOProjection dto = service.save(book);
         return toBook(dto);
     }
 }
