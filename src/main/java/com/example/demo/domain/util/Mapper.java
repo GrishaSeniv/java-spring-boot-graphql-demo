@@ -8,6 +8,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Set;
 
+import static com.example.demo.domain.util.StringUtil.transformToCamelCase;
+
 /**
  * @author Hryhorii Seniv
  * @version 2024-11-07
@@ -26,7 +28,8 @@ public class Mapper {
             T dtoProjection = dtoClass.getDeclaredConstructor().newInstance();
             int index = 0;
             for (String field : fields) {
-                Field dtoField = dtoClass.getDeclaredField(field);
+                String transformedField = transformToCamelCase(field);
+                Field dtoField = dtoClass.getDeclaredField(transformedField);
                 dtoField.setAccessible(true);
                 dtoField.set(dtoProjection, result[index++]);
             }

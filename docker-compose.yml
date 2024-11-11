@@ -1,6 +1,21 @@
 version: '3.8'
 
 services:
+  springboot-backend:
+    build: .
+    container_name: netflix-dgs-demo
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    networks:
+      - netflix-dgs-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/dgs-graphql-db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+
   postgresql:
     image: postgres:latest
     container_name: postgresql_container
@@ -12,6 +27,18 @@ services:
       - "5432:5432"
     volumes:
       - postgresql_data:/var/lib/postgresql
+    networks:
+      - netflix-dgs-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgresql_data:
+
+networks:
+  netflix-dgs-network:
+    name: netflix-dgs-network
+

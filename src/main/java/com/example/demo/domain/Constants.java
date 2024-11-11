@@ -5,6 +5,9 @@ package com.example.demo.domain;
  * @version 2024-10-31
  */
 public class Constants {
+    public static final String ASSOCIATION_FIELD_DELIMITER = ".";
+    public static final String ASSOCIATION_FIELD_REGEX = "\\.";
+
     // Default ID field name used for queries.
     // Change this value or dynamically set it if your entities
     // use a different field name for the primary key.

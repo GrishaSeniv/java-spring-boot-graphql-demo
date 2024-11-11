@@ -27,7 +27,7 @@ public class DgsUtil {
                 .map(SelectedField::getName)
                 .collect(Collectors.toSet());
         if (shouldAddIdField(allRequestedFields, filteredRequestedFields)) {
-            filteredRequestedFields.add(AUTHOR_ID_FIELD_NAME);
+            filteredRequestedFields.add(AUTHOR_ID_FIELD_NAME); // TODO path to param
         }
         return filteredRequestedFields;
     }

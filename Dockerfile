@@ -2,8 +2,8 @@ FROM eclipse-temurin:21
 
 WORKDIR /app
 
-COPY target/card-order-0.0.1-SNAPSHOT.jar /app/card-order-0.0.1-SNAPSHOT.jar
+COPY target/demo-0.0.1-SNAPSHOT.jar /app/demo-0.0.1-SNAPSHOT.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "card-order-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "demo-0.0.1-SNAPSHOT.jar"]

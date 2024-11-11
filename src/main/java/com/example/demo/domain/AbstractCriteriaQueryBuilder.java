@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.example.demo.domain.Constants.ASSOCIATION_FIELD_DELIMITER;
+import static com.example.demo.domain.Constants.ASSOCIATION_FIELD_REGEX;
+
 /**
  * Abstract base class for building criteria queries.
  *
@@ -22,9 +25,6 @@ import java.util.stream.Collectors;
  * @version 2024-10-31
  */
 public abstract class AbstractCriteriaQueryBuilder<E> {
-    private static final String ASSOCIATION_FIELD_DELIMITER = ".";
-    private static final String ASSOCIATION_FIELD_REGEX = "\\.";
-
     public Object[] fetchSelectedFieldsByFieldId(EntityManager entityManager, Set<String> fields,
                                                  Class<E> entityClazz, Long id, String fieldName) {
         return buildSelectedFieldsQueryByFieldId(entityManager, fields, entityClazz, id, fieldName).getSingleResult();
@@ -94,7 +94,7 @@ public abstract class AbstractCriteriaQueryBuilder<E> {
 
     private List<Selection<?>> buildSelections(Set<String> fields, Root<E> root) {
         return fields.stream()
-                .map(root::get)
+                .map(field -> getPath(root, field))
                 .collect(Collectors.toList());
     }
 

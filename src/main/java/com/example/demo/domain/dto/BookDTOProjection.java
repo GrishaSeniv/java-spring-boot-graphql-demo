@@ -8,6 +8,7 @@ public class BookDTOProjection {
     private Long id;
     private String title;
     private String genre;
+    private Long authorId;
 
     public BookDTOProjection() {
     }
@@ -45,12 +46,22 @@ public class BookDTOProjection {
         return this;
     }
 
+    public Long getAuthorId() {
+        return authorId;
+    }
+
+    public BookDTOProjection setAuthorId(Long authorId) {
+        this.authorId = authorId;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "BookDTOProjection{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", genre='" + genre + '\'' +
+                ", authorId=" + authorId +
                 '}';
     }
 }
